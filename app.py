@@ -6,7 +6,7 @@ app = Flask(__name__)
 # Define the home route
 @app.route('/')
 def home():
-    return "<h1>Welcome to My Flask App!</h1>"
+    return render_template("index.html")
 
 # Define another route
 @app.route('/about')
