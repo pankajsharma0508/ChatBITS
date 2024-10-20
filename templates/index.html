@@ -1,10 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My Flask App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT UI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Welcome to My Flask App! 123</h1>
-    <p>This is the home page.</p>
+    <div class="chat-container">
+        <div class="chat-header">Chat BITS - Group 19</div>
+        <div class="chat-body" id="chat-body">
+            <!-- Messages will appear here -->
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="message-input" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatBody = document.getElementById('chat-body');
+        const messageInput = document.getElementById('message-input');
+
+        // Function to handle sending a message
+        function sendMessage() {
+            const messageText = messageInput.value;
+            if (messageText.trim() === '') return;
+
+            // Display user's message
+            const userMessage = document.createElement('div');
+            userMessage.classList.add('chat-message');
+            userMessage.innerHTML = `<div class="message user">${messageText}</div>`;
+            chatBody.appendChild(userMessage);
+            messageInput.value = '';  // Clear input
+
+            // Send the message to the server
+            fetch('/send_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: messageText }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display bot's response
+                const botMessage = document.createElement('div');
+                botMessage.classList.add('chat-message');
+                botMessage.innerHTML = `<div class="message bot">${data.response}</div>`;
+                chatBody.appendChild(botMessage);
+
+                // Auto-scroll to the bottom of the chat
+                chatBody.scrollTop = chatBody.scrollHeight;
+            });
+        }
+    </script>
 </body>
 </html>
